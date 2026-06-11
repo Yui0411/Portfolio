@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { Project } from "@/types";
 import {
   createProject,
@@ -101,16 +102,12 @@ export default function ProjectForm({ initial }: { initial?: Project }) {
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="image_url">Image URL</Label>
-        <Input
-          id="image_url"
-          value={imageUrl}
-          onChange={(event) => setImageUrl(event.target.value)}
-          placeholder="https://…"
+        <Label>Image</Label>
+        <ImageUpload
+          value={imageUrl || null}
+          onChange={(url) => setImageUrl(url ?? "")}
+          folder="projects"
         />
-        <p className="text-xs text-muted-foreground">
-          Paste an image URL for now — direct file upload is coming soon.
-        </p>
       </div>
 
       <div className="grid gap-2">
