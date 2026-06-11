@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { Certificate } from "@/types";
 import {
   createCertificate,
@@ -81,16 +82,12 @@ export default function CertificateForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="image_url">Image URL</Label>
-        <Input
-          id="image_url"
-          value={imageUrl}
-          onChange={(event) => setImageUrl(event.target.value)}
-          placeholder="https://…"
+        <Label>Image</Label>
+        <ImageUpload
+          value={imageUrl || null}
+          onChange={(url) => setImageUrl(url ?? "")}
+          folder="certificates"
         />
-        <p className="text-xs text-muted-foreground">
-          Paste an image URL for now — direct file upload is coming soon.
-        </p>
       </div>
 
       <div className="grid gap-2">
