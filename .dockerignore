@@ -1,0 +1,25 @@
+# Don't copy these into the Docker build (smaller, faster, safer builds).
+
+# dependencies + build output (rebuilt inside the image)
+node_modules
+.next
+out
+build
+
+# secrets and local config — MUST stay out of the image
+.env
+.env.*
+!.env.example
+
+# git + tooling
+.git
+.gitignore
+.github
+.claude
+.vscode
+
+# docs / misc not needed to run
+README.md
+*.md
+supabase
+npm-debug.log*
