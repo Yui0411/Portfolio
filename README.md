@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# lloydshin.dev
 
-## Getting Started
+My personal portfolio. The public site presents my experience, projects, and certificates on an interactive timeline, and a private admin panel lets me manage that content without editing the code.
 
-First, run the development server:
+Live at https://lloydshin.dev
+
+## Why it's built this way
+
+I wanted a portfolio I would actually use, but I also treated it as an opportunity to learn the deployment side rather than only the application. Instead of a one-click host, it runs in Docker on an EC2 instance behind Nginx, with a GitHub Actions pipeline that redeploys on every push to `main`. This is more infrastructure than a personal site strictly needs, but learning that stack was a deliberate goal.
+
+## Stack
+
+- Next.js (App Router) + TypeScript
+- Tailwind + shadcn/ui
+- Supabase for Postgres, auth, and image storage
+- Docker, AWS (EC2, ECR, Route 53), Nginx, Let's Encrypt
+- GitHub Actions for CI/CD
+
+## Features
+
+The three public pages (experience, projects, certificates) share a single timeline component, each supplied with different data; the certificates page uses dots only, without the connecting line. Pages are server-rendered and read live from Supabase.
+
+The admin area at `/admin` is protected by Supabase Auth, verified in Next.js middleware so the pages do not render for unauthenticated users. From there I can:
+
+- create, edit, and delete experience, projects, and certificates
+- upload images, which are stored in Supabase Storage
+- edit the home page content
+
+Access control is enforced by Row Level Security in Supabase. Although the public anonymous key is shipped to the browser, it can only read published data; writes require an authenticated session.
+
+## Deployment
+
+Each push to `main` triggers GitHub Actions: it lints, type-checks, builds the Docker image, pushes it to ECR, and then connects to the instance over SSH to pull the new image and restart the container. AWS authentication uses OIDC, so no long-lived AWS keys are stored in GitHub, and the instance pulls from ECR using an IAM role, so no keys are kept on the server either.
+
+## Running locally
 
 ```bash
+git clone https://github.com/Yui0411/Portfolio.git
+cd Portfolio
+npm install --legacy-peer-deps
+cp .env.local.example .env.local   # add your Supabase URL + keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A Supabase project with the tables set up is required first. The SQL lives in [`supabase/`](supabase/), and [`supabase/SETUP.md`](supabase/SETUP.md) walks through it.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Possible improvements
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Public pages are rendered on each request; they could be statically generated with periodic revalidation.
+- The deploy step connects over SSH on port 22; using AWS SSM would avoid exposing SSH entirely.
+- The header contact details are currently hardcoded, though the profile table already includes the fields needed to make them editable.
