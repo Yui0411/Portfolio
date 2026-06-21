@@ -11,10 +11,11 @@ export default async function AdminDashboard() {
   } = await supabase.auth.getUser();
 
   // `head: true` + `count: "exact"` fetches only the row count, not the rows.
-  const [experience, projects, certificates] = await Promise.all([
+  const [experience, projects, certificates, analytics] = await Promise.all([
     supabase.from("experience").select("*", { count: "exact", head: true }),
     supabase.from("projects").select("*", { count: "exact", head: true }),
     supabase.from("certificates").select("*", { count: "exact", head: true }),
+    supabase.from("analytics").select("*", { count: "exact", head: true }),
   ]);
 
   const cards = [
@@ -53,6 +54,15 @@ export default async function AdminDashboard() {
             <div className="text-sm text-muted-foreground">{card.label}</div>
           </Link>
         ))}
+      </div>
+
+      <div className="rounded-xl border p-5 sm:w-fit">
+        <div className="text-3xl font-semibold tabular-nums">
+          {analytics.count ?? 0}
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Visits (unique per browser session)
+        </div>
       </div>
     </div>
   );

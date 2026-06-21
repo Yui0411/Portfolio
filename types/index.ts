@@ -41,7 +41,7 @@ export interface Certificate {
 
 export interface Analytics {
   id: number;
-  project_id: string | null;
+  visitor_id: string | null;
   referrer: string | null;
   created_at: string;
 }

@@ -45,7 +45,7 @@ create table if not exists public.certificates (
 
 create table if not exists public.analytics (
   id          bigint generated always as identity primary key,
-  project_id  uuid references public.projects(id) on delete set null,
+  visitor_id  text unique,                -- one row per unique visitor (per browser session)
   referrer    text,
   created_at  timestamptz not null default now()
 );
@@ -55,7 +55,6 @@ create table if not exists public.analytics (
 create index if not exists experience_order_idx   on public.experience   (display_order);
 create index if not exists projects_order_idx      on public.projects      (display_order);
 create index if not exists certificates_order_idx  on public.certificates  (display_order);
-create index if not exists analytics_project_idx   on public.analytics     (project_id, created_at);
 
 -- ---------- Row Level Security ----------
 -- Public site uses the ANON key → read-only.
