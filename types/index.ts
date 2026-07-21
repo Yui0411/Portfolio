@@ -43,6 +43,10 @@ export interface Analytics {
   id: number;
   visitor_id: string | null;
   referrer: string | null;
+  user_agent: string | null;
+  ip: string | null;
+  country: string | null;
+  isp: string | null;
   created_at: string;
 }
 
