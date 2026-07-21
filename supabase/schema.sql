@@ -47,6 +47,10 @@ create table if not exists public.analytics (
   id          bigint generated always as identity primary key,
   visitor_id  text unique,                -- one row per unique visitor (per browser session)
   referrer    text,
+  user_agent  text,                       -- browser/bot UA (enrichment for bot detection)
+  ip          text,
+  country     text,
+  isp         text,                       -- network owner; "Amazon/Google/OVH" => likely a bot
   created_at  timestamptz not null default now()
 );
 
